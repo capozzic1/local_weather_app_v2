@@ -5,38 +5,100 @@
 
 
 class LocalWeather {
-  constructor(
-    public location: string,
-    public temp: number,
-    public description: string,
-    public humidity: number,
-    public icon: string,
-    public celsius: number,
-    public lat: number
-  ) { }
+  private location: string;
+  private temp: number;
+  private description: string;
+  private humidity: number;
+  private icon: string;
+  private celsius: number;
+  private lat: number;
+  private long: number;
 
-  static getCoords(): void {
-    fetch('https://geoip.nekudo.com/api')
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(json) {
-        console.log(json);
+  constructor() {
 
-        this.lat = json.location.latitude;
-        this.long = json.location.longitude;
-
-        let weatherURL = `https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?lat=${this.lat}&lon=${this.long}&units=imperial&APPID=ef73411c829a4563b61b64e76cb72976`;
-
-        //console.log(this.long);
-      });
-    //console.log(test)
   }
 
-  public getWeatherData() { }
-}
+  public async getCoords(): Promise<any> {
+    let coords = await fetch('https://geoip.nekudo.com/api').then((response) => response.json());
 
-LocalWeather.getCoords();
+    console.log(coords)
+    this.lat = coords.location.latitude;
+    this.long = coords.location.longitude;
+
+    let weatherURL = `https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?lat=${this.lat}&lon=${this.long}&units=imperial&APPID=ef73411c829a4563b61b64e76cb72976`;
+
+    this.getWeatherData(weatherURL);
+
+  }
+
+  public async getWeatherData(url: string): Promise<any> {
+    let weatherData = await fetch(url).then((result => result.json()));
+    console.log(weatherData);
+    const icon = weatherData.weather[0].icon;
+
+    this.handleBackgroundImg(icon);
+  }
+
+  public handleBackgroundImg(icon: string): void {
+    let weather = document.querySelector(".weather") as HTMLElement;
+    console.log(weather)
+    //weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/5914/C8hAMP.jpg")';
+    //
+    switch (icon) {
+      case "01d":
+        weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/5914/C8hAMP.jpg")';
+        //$(".weather").css("background-image", "url()");
+        break;
+      case "01n":
+        weather.style.backgroundImage = 'url("http://imageshack.com/a/img924/3455/slHReo.jpg")';
+        //$(".weather").css("background-image", "url()");
+        break;
+      case "02d":
+      case "03d":
+      case "04d":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img922/8471/LF0cGZ.jpg)");
+        break;
+      case "02n":
+      case "03n":
+      case "04n":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img923/7048/Ot7l6k.jpg)");
+        break;
+      case "09d":
+      case "10d":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img921/375/RMia6h.jpg)");
+        break;
+      case "09n":
+      case "10n":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img922/1227/Lf4qc2.jpg)");
+        break;
+      case "11d":
+      case "11n":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img924/2258/h4eNcE.jpg)");
+        break;
+      case "13d":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img922/3753/cEf7xg.jpg)");
+        break;
+      case "13n":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img923/1196/G2MDy6.jpg)");
+        break;
+      case "50d":
+      case "50n":
+        weather.style.backgroundImage = 'url("")';
+        $(".weather").css("background-image", "url(http://imageshack.com/a/img921/8166/H0mO7r.jpg)");
+        break;
+
+    }
+  }
+}
+let weather = new LocalWeather();
+weather.getCoords();
 // function handleCoords() {
 //   var lat = "";
 //   var long = "";
