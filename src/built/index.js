@@ -46,6 +46,7 @@ var LocalWeather = /** @class */ (function () {
                     case 0: return [4 /*yield*/, fetch('https://geoip.nekudo.com/api').then(function (response) { return response.json(); })];
                     case 1:
                         coords = _a.sent();
+                        this.location = coords.city;
                         console.log(coords);
                         this.lat = coords.location.latitude;
                         this.long = coords.location.longitude;
@@ -58,15 +59,19 @@ var LocalWeather = /** @class */ (function () {
     };
     LocalWeather.prototype.getWeatherData = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var weatherData, icon;
+            var weatherData;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, fetch(url).then((function (result) { return result.json(); }))];
                     case 1:
                         weatherData = _a.sent();
                         console.log(weatherData);
-                        icon = weatherData.weather[0].icon;
-                        this.handleBackgroundImg(icon);
+                        this.icon = weatherData.weather[0].icon;
+                        this.temp = weatherData.main.temp;
+                        this.description = weatherData.weather[0].description;
+                        this.humidity = weatherData.main.humidity;
+                        this.handleBackgroundImg(this.icon);
+                        this.displayWeather();
                         return [2 /*return*/];
                 }
             });
@@ -75,58 +80,84 @@ var LocalWeather = /** @class */ (function () {
     LocalWeather.prototype.handleBackgroundImg = function (icon) {
         var weather = document.querySelector(".weather");
         console.log(weather);
-        //weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/5914/C8hAMP.jpg")';
-        //
-        switch (icon) {
+        switch (this.icon) {
             case "01d":
                 weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/5914/C8hAMP.jpg")';
-                //$(".weather").css("background-image", "url()");
                 break;
             case "01n":
                 weather.style.backgroundImage = 'url("http://imageshack.com/a/img924/3455/slHReo.jpg")';
-                //$(".weather").css("background-image", "url()");
                 break;
             case "02d":
             case "03d":
             case "04d":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img922/8471/LF0cGZ.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img922/8471/LF0cGZ.jpg")';
                 break;
             case "02n":
             case "03n":
             case "04n":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img923/7048/Ot7l6k.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/7048/Ot7l6k.jpg")';
                 break;
             case "09d":
             case "10d":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img921/375/RMia6h.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img921/375/RMia6h.jpg")';
                 break;
             case "09n":
             case "10n":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img922/1227/Lf4qc2.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img922/1227/Lf4qc2.jpg")';
                 break;
             case "11d":
             case "11n":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img924/2258/h4eNcE.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img924/2258/h4eNcE.jpg")';
                 break;
             case "13d":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img922/3753/cEf7xg.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img922/3753/cEf7xg.jpg")';
                 break;
             case "13n":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img923/1196/G2MDy6.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img923/1196/G2MDy6.jpg")';
                 break;
             case "50d":
             case "50n":
-                weather.style.backgroundImage = 'url("")';
-                $(".weather").css("background-image", "url(http://imageshack.com/a/img921/8166/H0mO7r.jpg)");
+                weather.style.backgroundImage = 'url("http://imageshack.com/a/img921/8166/H0mO7r.jpg")';
                 break;
         }
+    };
+    LocalWeather.prototype.displayWeather = function () {
+        var locationSelect = document.querySelector(".location");
+        var tempSelect = document.querySelector(".temp");
+        var newI = document.createElement('i');
+        var descSelect = document.querySelector(".desc");
+        var humidSelect = document.querySelector(".humid");
+        newI.classList.add('wi', 'wi-fahrenheit');
+        locationSelect.textContent = "Location: " + this.location;
+        tempSelect.textContent = "The temperature is " + Math.round(this.temp) + " ";
+        tempSelect.appendChild(newI);
+        descSelect.textContent = "Description: " + this.description.charAt(0).toUpperCase() + this.description.slice(1);
+        humidSelect.textContent = "Humidity: " + Math.round(this.humidity) + "%";
+        this.handleEvents();
+    };
+    LocalWeather.prototype.handleEvents = function () {
+        var _this = this;
+        var fahBtn = document.querySelector(".fah1");
+        var temperature = document.querySelector(".temp");
+        var newI = document.createElement("i");
+        var celBtn = document.querySelector(".cel2");
+        fahBtn.addEventListener("click", function () {
+            temperature.textContent = "The temperature is " + Math.round(_this.temp);
+            temperature.appendChild(newI);
+            newI.classList.add("wi", "wi-fahrenheit");
+        });
+        celBtn.addEventListener("click", function () {
+            _this.celsius = Math.round((_this.temp - 32) * 5 / 9);
+            temperature.textContent = "The temperature is " + _this.celsius + " ";
+            temperature.appendChild(newI);
+            newI.classList.add("wi", "wi-celsius");
+        });
+        //    $(".fah1").click(function(){
+        //      $(".temp").text("The temperature is " + Math.round(temp)).append('<i class="wi wi-fahrenheit"></i>');
+        //    });
+        //     $(".cel2").click(function(){
+        //      $(".temp").text("The temperature is " + celsius).append('<i class="wi wi-celsius"></i>');
+        //    });
     };
     return LocalWeather;
 }());
