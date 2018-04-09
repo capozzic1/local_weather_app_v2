@@ -1,10 +1,5 @@
 
 
-// //http://api.openweathermap.org/data/2.5/forecast/city?id=524901&APPID=ef73411c829a4563b61b64e76cb72976
-// handleCoords();
-
-
-
 
 class LocalWeather {
   private location: string;
@@ -23,7 +18,7 @@ class LocalWeather {
   public async getCoords(): Promise<any> {
     let coords = await fetch('https://geoip.nekudo.com/api').then((response) => response.json());
     this.location = coords.city;
-    console.log(coords)
+    //console.log(coords)
     this.lat = coords.location.latitude;
     this.long = coords.location.longitude;
 
@@ -33,7 +28,7 @@ class LocalWeather {
 
   }
 
-  public async getWeatherData(url: string): Promise<any> {
+  private async getWeatherData(url: string): Promise<any> {
     let weatherData = await fetch(url).then((result => result.json()));
 
     this.icon = weatherData.weather[0].icon;
@@ -41,13 +36,13 @@ class LocalWeather {
     this.description = weatherData.weather[0].description;
     this.humidity = weatherData.main.humidity;
 
-    this.handleBackgroundImg(this.icon);
+    this.handleBackgroundImg();
     this.displayWeather();
   }
 
-  public handleBackgroundImg(icon: string): void {
+  private handleBackgroundImg(): void {
     let weather = document.querySelector(".weather") as HTMLElement;
-    console.log(weather)
+    //console.log(weather)
 
     switch (this.icon) {
       case "01d":
@@ -102,7 +97,7 @@ class LocalWeather {
     }
   }
 
-  public displayWeather(): void {
+  private displayWeather(): void {
     let locationSelect = document.querySelector(".location") as HTMLElement;
     let tempSelect = document.querySelector(".temp") as HTMLElement;
     let newI = document.createElement('i');
@@ -126,19 +121,29 @@ class LocalWeather {
     let celBtn = document.querySelector(".cel2");
 
     fahBtn.addEventListener("click", () => {
-      temperature.textContent = `The temperature is ${Math.round(this.temp)}`;
-      temperature.appendChild(newI);
+      temperature.textContent = `The temperature is ${Math.round(this.temp)} `;
+      newI.classList.remove("wi-celsius");
       newI.classList.add("wi", "wi-fahrenheit");
+      let classes = newI.classList;
+      console.log(classes)
+      temperature.appendChild(newI);
+
     });
 
     celBtn.addEventListener("click", () => {
       this.celsius = Math.round((this.temp - 32) * 5 / 9);
       temperature.textContent = `The temperature is ${this.celsius} `;
-      temperature.appendChild(newI);
+      let classes = newI.classList;
+      newI.classList.remove("wi-fahrenheit");
       newI.classList.add("wi", "wi-celsius");
+
+      temperature.appendChild(newI);
+
+
     });
 
   }
+
 }
 let weather = new LocalWeather();
 weather.getCoords();
